@@ -26,6 +26,7 @@ extension PhotoPreviewViewController: PhotoToolBarDelegate {
         if previewType != .browser {
             photoToolbar.updateOriginalState(pickerController.isOriginal)
             photoToolbar.requestOriginalAssetBtyes()
+            photoToolbar.updateLookOnceState(pickerController.isLookOnce)
             let selectedAssetArray = pickerController.selectedAssetArray
             photoToolbar.updateSelectedAssets(selectedAssetArray)
             photoToolbar.selectedAssetDidChanged(selectedAssetArray)
@@ -51,6 +52,12 @@ extension PhotoPreviewViewController: PhotoToolBarDelegate {
             didOriginalButton: isSelected
         )
         pickerController.originalButtonCallback()
+    }
+    
+    public func photoToolbar(_ toolbar: any PhotoToolBar, didLookOnceClick isSelected: Bool) {
+        pickerController.isLookOnce = isSelected
+        delegate?.previewViewController(self, didLookOnceButton: isSelected)
+        pickerController.lookOnceButtonCallback()
     }
     
     #if HXPICKER_ENABLE_EDITOR
@@ -381,6 +388,20 @@ extension PhotoPreviewViewController: PhotoToolBarDelegate {
         delegate?.previewViewController(
             self,
             didOriginalButton: isOriginal
+        )
+    }
+    
+    public func setLookOnce(_ isLookOnce: Bool) {
+        guard let photoToolbar = photoToolbar else {
+            return
+        }
+        photoToolbar.updateLookOnceState(isLookOnce)
+       
+        pickerController.isLookOnce = isLookOnce
+        pickerController.lookOnceButtonCallback()
+        delegate?.previewViewController(
+            self,
+            didLookOnceButton: isLookOnce
         )
     }
     

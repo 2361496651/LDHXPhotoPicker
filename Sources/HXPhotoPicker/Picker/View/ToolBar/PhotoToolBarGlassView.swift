@@ -83,6 +83,10 @@ public class PhotoToolBarGlassView: UIView, PhotoToolBar {
     private var originalBtn: UIButton!
     private var finishBtn: UIBarButtonItem!
     
+    /// 只看一次
+    private var lookOnceItem: UIBarButtonItem!
+    private var lookOnceBtn: UIButton!
+    
     private var isShowPrompt: Bool {
         type == .picker &&
         AssetPermissionsUtil.isLimitedAuthorizationStatus &&
@@ -192,8 +196,11 @@ public class PhotoToolBarGlassView: UIView, PhotoToolBar {
         }
         
         if type != .browser {
-            originalItem = makeCenterItem()
+            originalItem = makeOriginalItem()
             originalItem.isHidden = viewConfig.isHiddenOriginalButton
+            
+            lookOnceItem = makeLookOnceItem()
+            lookOnceItem.isHidden = viewConfig.isHiddenLookOnceButton
              
             if type == .picker {
                 finishBtn = .init(title: .textPhotoList.bottomView.finishTitle.text, style: .plain, target: self, action: #selector(didFinishButtonClick))
@@ -212,11 +219,18 @@ public class PhotoToolBarGlassView: UIView, PhotoToolBar {
         }else {
             leftItem = .flexibleSpace()
         }
-        let centerItem: UIBarButtonItem
+        let leftCenterItem: UIBarButtonItem
         if let originalItem {
-            centerItem = originalItem
+            leftCenterItem = originalItem
         }else {
-            centerItem = .flexibleSpace()
+            leftCenterItem = .flexibleSpace()
+        }
+        
+        let rightCenterItem: UIBarButtonItem
+        if let lookOnceItem {
+            rightCenterItem = lookOnceItem
+        }else {
+            rightCenterItem = .flexibleSpace()
         }
         
         let rightItem: UIBarButtonItem
@@ -226,7 +240,7 @@ public class PhotoToolBarGlassView: UIView, PhotoToolBar {
             rightItem = .flexibleSpace()
         }
         let flex = UIBarButtonItem.flexibleSpace()
-        contentView.setItems([leftItem, flex, centerItem, flex, rightItem], animated: false)
+        contentView.setItems([leftItem, flex, leftCenterItem, flex, rightCenterItem, rightItem], animated: false)
         contentView.insetsLayoutMarginsFromSafeArea = false
         
         let tmpBtn = UIButton(type: .system)
@@ -252,7 +266,7 @@ public class PhotoToolBarGlassView: UIView, PhotoToolBar {
         configColor()
     }
     
-    func makeCenterItem() -> UIBarButtonItem {
+    func makeOriginalItem() -> UIBarButtonItem {
         originalBtn = ExpandButton(type: .system)
         var cfg = UIButton.Configuration.plain()
         cfg.background.backgroundColorTransformer = UIConfigurationColorTransformer { _ in .clear }
@@ -283,6 +297,39 @@ public class PhotoToolBarGlassView: UIView, PhotoToolBar {
         originalBtn.titleLabel?.adjustsFontSizeToFitWidth = true
         originalBtn.titleLabel?.lineBreakMode = .byTruncatingMiddle
         return UIBarButtonItem(customView: originalBtn)
+    }
+    
+    func makeLookOnceItem() -> UIBarButtonItem {
+        lookOnceBtn = ExpandButton(type: .system)
+        var cfg = UIButton.Configuration.plain()
+        cfg.background.backgroundColorTransformer = UIConfigurationColorTransformer { _ in .clear }
+        cfg.background.visualEffect = nil
+        cfg.baseForegroundColor = .label
+//        cfg.imageColorTransformer = UIConfigurationColorTransformer { [weak self] color in
+//            guard let self else { return }
+//            if self.lookOnceBtn.isSelected {
+//                return self.pickerConfig.photoList.bottomView.originalSelectBox.selectedBackgroundColor
+//            }else {
+//                return color
+//            }
+//        }
+        cfg.imagePadding = 4
+        cfg.contentInsets = .init(top: 0, leading: 5, bottom: 0, trailing: 5)
+        lookOnceBtn.configuration = cfg
+        
+        if type == .picker {
+            lookOnceBtn.setTitle(.textPhotoList.bottomView.onceTitle.text, for: .normal)
+        }else {
+            lookOnceBtn.setTitle(.textPreview.bottomView.onceTitle.text, for: .normal)
+        }
+        lookOnceBtn.setImage(.init(systemName: "circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        lookOnceBtn.setImage(.init(systemName: "checkmark.circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
+        lookOnceBtn.addTarget(self, action: #selector(didLookonceButtonClick), for: .touchUpInside)
+        
+        lookOnceBtn.titleLabel?.numberOfLines = 0
+        lookOnceBtn.titleLabel?.adjustsFontSizeToFitWidth = true
+        lookOnceBtn.titleLabel?.lineBreakMode = .byTruncatingMiddle
+        return UIBarButtonItem(customView: lookOnceBtn)
     }
     
     func makePermissionPromptItem() -> UIBarButtonItem {
@@ -326,6 +373,12 @@ public class PhotoToolBarGlassView: UIView, PhotoToolBar {
         selectedView.delegate = self
         addSubview(selectedView)
     }
+    
+    public func updateLookOnceState(_ isSelected: Bool) {
+        guard let lookOnceBtn else { return }
+        lookOnceBtn.isSelected = isSelected
+    }
+    
     public func updateOriginalState(_ isSelected: Bool) {
         guard let originalBtn else { return}
         originalBtn.isSelected = isSelected
@@ -424,6 +477,14 @@ public class PhotoToolBarGlassView: UIView, PhotoToolBar {
         toolbarDelegate?.photoToolbar(didEditClick: self)
     }
     #endif
+    
+    @objc
+    private func didLookonceButtonClick() {
+        guard let lookOnceBtn else { return}
+        lookOnceBtn.isSelected = !lookOnceBtn.isSelected
+        let isSelected = lookOnceBtn.isSelected
+        toolbarDelegate?.photoToolbar(self, didLookOnceClick: isSelected)
+    }
     
     @objc
     private func didOriginalButtonClick() {

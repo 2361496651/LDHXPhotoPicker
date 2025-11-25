@@ -61,6 +61,19 @@ extension PhotoPickerViewController: PhotoPreviewViewControllerDelegate {
     }
     func previewViewController(
         _ previewController: PhotoPreviewViewController,
+        didLookOnceButton isLookOnce: Bool
+    ) {
+        if config.previewStyle == .present {
+            pickerController.isLookOnce = isLookOnce
+            pickerController.lookOnceButtonCallback()
+        }
+        if pickerConfig.isMultipleSelect {
+            photoToolbar.updateLookOnceState(isLookOnce)
+        }
+    }
+    
+    func previewViewController(
+        _ previewController: PhotoPreviewViewController,
         didSelectBox photoAsset: PhotoAsset,
         isSelected: Bool,
         updateCell: Bool

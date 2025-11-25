@@ -47,6 +47,22 @@ public struct PickerBottomViewConfiguration {
     /// 暗黑风格下预览按钮禁用下的标题颜色
     public var previewButtonDisableTitleDarkColor: UIColor?
     
+    /// Hide once image button
+    /// 是否隐藏仅看一次按钮
+    public var isHiddenLookOnceButton: Bool = true
+    
+    /// look once image button selection box related configuration
+    /// 只看一次按钮选择框相关配置
+    public var lookOnceSelectBox: SelectBoxConfiguration
+    
+    /// Original image button title color
+    /// 只看一次按钮标题颜色
+    public var lookOnceButtonTitleColor: UIColor = .systemBlue
+    
+    /// Preview button title color in dark style
+    /// 暗黑风格下只看一次按钮标题颜色
+    public var lookOnceButtonTitleDarkColor: UIColor = .white
+    
     /// Hide original image button
     /// 是否隐藏原图按钮
     public var isHiddenOriginalButton: Bool = false
@@ -202,6 +218,7 @@ public struct PickerBottomViewConfiguration {
         boxConfig.tickWidth = 1
         boxConfig.size = .init(width: 17, height: 17)
         self.originalSelectBox = boxConfig
+        self.lookOnceSelectBox = boxConfig
     }
     
     public mutating func setThemeColor(_ color: UIColor) {
@@ -209,6 +226,9 @@ public struct PickerBottomViewConfiguration {
         originalSelectBox.borderColor = color
         previewButtonTitleColor = color
         originalButtonTitleColor = color
+        lookOnceSelectBox.setThemeColor(color)
+        lookOnceSelectBox.borderColor = color
+        lookOnceButtonTitleColor = color
         finishButtonBackgroundColor = color
         finishButtonDarkBackgroundColor = color
         finishButtonDisableBackgroundColor = color.withAlphaComponent(0.4)

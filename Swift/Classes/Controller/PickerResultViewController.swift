@@ -50,7 +50,9 @@ class PickerResultViewController: UIViewController,
     /// 当前已选资源
     var selectedAssets: [PhotoAsset] = []
     /// 是否选中的原图
-    var isOriginal: Bool = false
+    var isOriginal: Bool = true
+    /// 是否选中的仅看一次
+    var isLookOnce: Bool = true
     /// 相机拍摄的本地资源
     var localCameraAssetArray: [PhotoAsset] = []
     /// 相关配置
@@ -434,6 +436,7 @@ class PickerResultViewController: UIViewController,
             picker.selectedAssetArray = selectedAssets
             picker.localCameraAssetArray = localCameraAssetArray
             picker.isOriginal = isOriginal
+            picker.isLookOnce = isLookOnce
             picker.localAssetArray = localAssetArray
             picker.autoDismiss = false
             let split = PhotoSplitViewController(picker: picker)
@@ -444,6 +447,7 @@ class PickerResultViewController: UIViewController,
             pickerController.selectedAssetArray = selectedAssets
             pickerController.localCameraAssetArray = localCameraAssetArray
             pickerController.isOriginal = isOriginal
+            pickerController.isLookOnce = isLookOnce
             pickerController.localAssetArray = localAssetArray
             pickerController.autoDismiss = false
             present(pickerController, animated: true, completion: nil)
@@ -789,6 +793,7 @@ extension PickerResultViewController: PhotoPickerControllerDelegate {
     func pickerController(_ pickerController: PhotoPickerController, didFinishSelection result: PickerResult) {
         selectedAssets = result.photoAssets
         isOriginal = result.isOriginal
+        isLookOnce = result.isLookOnce
         collectionView.reloadData()
         updateCollectionViewHeight()
         

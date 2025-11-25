@@ -14,6 +14,10 @@ protocol PhotoPreviewViewControllerDelegate: AnyObject {
     )
     func previewViewController(
         _ previewController: PhotoPreviewViewController,
+        didLookOnceButton isLookOnce: Bool
+    )
+    func previewViewController(
+        _ previewController: PhotoPreviewViewController,
         didSelectBox photoAsset: PhotoAsset,
         isSelected: Bool,
         updateCell: Bool
@@ -68,6 +72,10 @@ extension PhotoPreviewViewControllerDelegate {
     func previewViewController(
         _ previewController: PhotoPreviewViewController,
         didOriginalButton isOriginal: Bool
+    ) { }
+    func previewViewController(
+        _ previewController: PhotoPreviewViewController,
+        didLookOnceButton isLookOnce: Bool
     ) { }
     func previewViewController(
         _ previewController: PhotoPreviewViewController,

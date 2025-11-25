@@ -93,6 +93,15 @@ public protocol PhotoPickerViewDelegate: AnyObject {
         previewDidOriginalButton isSelected: Bool
     )
     
+    /// 预览界面点击了仅看一次
+    /// - Parameters:
+    ///   - photoPickerView: 对应的 PhotoPickerView
+    ///   - isSelected: 是否选中
+    func photoPickerView(
+        _ photoPickerView: PhotoPickerView,
+        previewDidLookOnceButton isLookOnce: Bool
+    )
+    
     #if HXPICKER_ENABLE_EDITOR
     
     /// 即将编辑照片
@@ -248,6 +257,11 @@ public extension PhotoPickerViewDelegate {
     func photoPickerView(
         _ photoPickerView: PhotoPickerView,
         previewDidOriginalButton isSelected: Bool
+    ) { }
+    
+    func photoPickerView(
+        _ photoPickerView: PhotoPickerView,
+        previewDidLookOnceButton isLookOnce: Bool
     ) { }
     
     #if HXPICKER_ENABLE_EDITOR

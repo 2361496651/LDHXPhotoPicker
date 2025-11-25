@@ -24,6 +24,9 @@ open class PhotoPickerView: UIView {
     
     /// 是否原图，预览界面时选中原图按钮
     public var isOriginal: Bool = false
+    /// 是否仅看一次，预览界面时选中仅看一次按钮
+    public var isLookOnce: Bool = false
+    
     
     /// 启用拖动手势
     public var dragEnable: Bool = true {

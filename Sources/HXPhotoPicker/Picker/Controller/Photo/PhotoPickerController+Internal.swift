@@ -17,7 +17,8 @@ extension PhotoPickerController {
         #endif
         let result = PickerResult(
             photoAssets: selectedAssetArray,
-            isOriginal: isOriginal
+            isOriginal: isOriginal,
+            isLookOnce: isLookOnce
         )
         finishHandler?(result, self)
         pickerDelegate?.pickerController(
@@ -38,7 +39,8 @@ extension PhotoPickerController {
         #endif
         let result = PickerResult(
             photoAssets: [photoAsset],
-            isOriginal: isOriginal
+            isOriginal: isOriginal,
+            isLookOnce: isLookOnce
         )
         finishHandler?(result, self)
         pickerDelegate?.pickerController(
@@ -72,6 +74,12 @@ extension PhotoPickerController {
         pickerDelegate?.pickerController(
             self,
             didOriginalButton: isOriginal
+        )
+    }
+    func lookOnceButtonCallback() {
+        pickerDelegate?.pickerController(
+            self,
+            didLookOnceButton: isLookOnce
         )
     }
     func shouldPresentCamera() -> Bool {

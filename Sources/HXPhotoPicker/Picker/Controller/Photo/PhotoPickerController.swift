@@ -39,6 +39,9 @@ open class PhotoPickerController: UINavigationController {
     /// 是否选中了原图，配置不显示原图按钮时，内部也是根据此属性来判断是否获取原图数据
     public var isOriginal: Bool = false
     
+    /// 是否选中了仅看一次
+    public var isLookOnce: Bool = false
+    
     /// fetch Assets 时的选项配置
     public var options: PHFetchOptions {
         get { fetchData.options }

@@ -80,6 +80,7 @@ class PickerConfigurationViewController: UITableViewController {
                         pickerResultVC.config = config
                         pickerResultVC.selectedAssets = result.photoAssets
                         pickerResultVC.isOriginal = result.isOriginal
+                        pickerResultVC.isLookOnce = result.isLookOnce
                         navigationController?.pushViewController(pickerResultVC, animated: false)
                         controller.dismiss(true)
                     } catch {

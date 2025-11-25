@@ -84,6 +84,11 @@ public class PhotoToolBarView: UIView, PhotoToolBar {
     private var finishBtn: UIButton!
     private var isOriginalLoading: Bool = false
     private var originalobserve: NSKeyValueObservation?
+    /// 只看一次
+    private var lookonceView: UIControl!
+    private var lookonceBox: SelectBoxView!
+    private var lookonceTitleLb: UILabel!
+    private var lookonceObserve: NSKeyValueObservation?
     
     private var isShowPrompt: Bool {
         type == .picker &&
@@ -196,6 +201,7 @@ public class PhotoToolBarView: UIView, PhotoToolBar {
         }
         
         if type != .browser {
+            // 原图
             originalView = UIControl()
             originalView.isHidden = viewConfig.isHiddenOriginalButton
             contentView.addSubview(originalView)
@@ -233,6 +239,46 @@ public class PhotoToolBarView: UIView, PhotoToolBar {
                 let config = self.type == .picker ? self.pickerConfig.photoList.bottomView : self.pickerConfig.previewView.bottomView
                 let textColor = PhotoManager.isDark ? config.originalButtonTitleDarkColor : config.originalButtonTitleColor
                 self.originalTitleLb.textColor = control.isHighlighted ? textColor.withAlphaComponent(0.4) : textColor
+            }
+            
+            // 只看一次
+            lookonceView = UIControl()
+            lookonceView.isHidden = viewConfig.isHiddenLookOnceButton
+            contentView.addSubview(lookonceView)
+            
+            lookonceTitleLb = UILabel()
+            if type == .picker {
+                lookonceTitleLb.text = .textPhotoList.bottomView.onceTitle.text
+                lookonceTitleLb.font = .textPhotoList.bottomView.onceTitleFont
+            }else {
+                lookonceTitleLb.text = .textPreview.bottomView.onceTitle.text
+                lookonceTitleLb.font = .textPreview.bottomView.onceTitleFont
+            }
+            lookonceTitleLb.lineBreakMode = .byTruncatingHead
+            lookonceView.addSubview(lookonceTitleLb)
+            
+            let onceBoxConfig: SelectBoxConfiguration
+            if type == .picker {
+                onceBoxConfig = config.photoList.bottomView.lookOnceSelectBox
+            }else {
+                onceBoxConfig = config.previewView.bottomView.lookOnceSelectBox
+            }
+            lookonceBox = SelectBoxView(onceBoxConfig, frame: CGRect(x: 0, y: 0, width: 17, height: 17))
+            lookonceBox.backgroundColor = .clear
+            lookonceBox.isUserInteractionEnabled = false
+            lookonceView.addSubview(lookonceBox)
+            
+//            originalLoadingView = UIActivityIndicatorView(style: .white)
+//            originalLoadingView.hidesWhenStopped = true
+//            originalView.addSubview(originalLoadingView)
+            
+            lookonceView.addTarget(self, action: #selector(didLookonceButtonClick), for: .touchUpInside)
+            lookonceObserve = lookonceView.observe(\.isHighlighted, options: [.new, .old]) { [weak self] control, value in
+                guard let self = self else { return }
+                self.lookonceBox.isHighlighted = control.isHighlighted
+                let config = self.type == .picker ? self.pickerConfig.photoList.bottomView : self.pickerConfig.previewView.bottomView
+                let textColor = PhotoManager.isDark ? config.lookOnceButtonTitleDarkColor : config.lookOnceButtonTitleColor
+                self.lookonceTitleLb.textColor = control.isHighlighted ? textColor.withAlphaComponent(0.4) : textColor
             }
             
             finishBtn = UIButton(type: .custom)
@@ -283,6 +329,11 @@ public class PhotoToolBarView: UIView, PhotoToolBar {
         selectedView.delegate = self
         addSubview(selectedView)
     }
+    
+    public func updateLookOnceState(_ isSelected: Bool) {
+        lookonceBox.isSelected = isSelected
+    }
+    
     public func updateOriginalState(_ isSelected: Bool) {
         originalBox.isSelected = isSelected
     }
@@ -378,6 +429,26 @@ public class PhotoToolBarView: UIView, PhotoToolBar {
         toolbarDelegate?.photoToolbar(didEditClick: self)
     }
     #endif
+    
+    @objc
+    private func didLookonceButtonClick() {
+        lookonceBox.isSelected = !lookonceBox.isSelected
+        lookonceBox.layer.removeAnimation(forKey: "SelectControlAnimation")
+        let keyAnimation = CAKeyframeAnimation.init(keyPath: "transform.scale")
+        keyAnimation.duration = 0.3
+        keyAnimation.values = [1.2, 0.8, 1.1, 0.9, 1.0]
+        lookonceBox.layer.add(keyAnimation, forKey: "SelectControlAnimation")
+        
+        let isSelected = lookonceBox.isSelected
+//        if isSelected {
+//            if isCanLoadOriginal {
+//                startOriginalLoading()
+//            }
+//        }else {
+//            stopOriginalLoading(bytes: 0, bytesString: "")
+//        }
+        toolbarDelegate?.photoToolbar(self, didLookOnceClick: isSelected)
+    }
     
     @objc
     private func didOriginalButtonClick() {
@@ -481,6 +552,7 @@ public class PhotoToolBarView: UIView, PhotoToolBar {
             }
             updateFinishButtonFrame()
             updateOriginalViewFrame()
+            updateLookOnceViewFrame()
         }else if type == .preview {
             #if HXPICKER_ENABLE_EDITOR
             if UIDevice.leftMargin > 0 {
@@ -508,6 +580,7 @@ public class PhotoToolBarView: UIView, PhotoToolBar {
             }
             updateFinishButtonFrame()
             updateOriginalViewFrame()
+            updateLookOnceViewFrame()
         }else {
             if isShowPreviewList {
                 previewListView.y = 10
@@ -536,6 +609,7 @@ public class PhotoToolBarView: UIView, PhotoToolBar {
     
     deinit {
         originalobserve = nil
+        lookonceObserve = nil
     }
 }
 
@@ -757,6 +831,7 @@ extension PhotoToolBarView {
         if type != .browser {
             originalLoadingView.style = isDark ? config.originalLoadingDarkStyle : config.originalLoadingStyle
             originalTitleLb.textColor = isDark ? config.originalButtonTitleDarkColor : config.originalButtonTitleColor
+            lookonceTitleLb.textColor = isDark ? config.lookOnceButtonTitleDarkColor : config.lookOnceButtonTitleColor
             
             let finishBtnBackgroundColor = isDark ?
                 config.finishButtonDarkBackgroundColor :
@@ -803,6 +878,64 @@ extension PhotoToolBarView {
 
 extension PhotoToolBarView {
     
+    func updateLookOnceViewFrame() {
+        updateLookOnceSubviewFrame()
+        lookonceView.frame = CGRect(x: 0, y: 0, width: lookonceTitleLb.frame.maxX, height: 50)
+        let config = type == .picker ? pickerConfig.photoList.bottomView : pickerConfig.previewView.bottomView
+        if config.isHiddenOriginalButton {
+            lookonceView.centerX = width * 0.5
+            return
+        }
+        lookonceView.centerX = width * 2.0 / 3.0
+        if PhotoManager.isRTL {
+            return
+        }
+        let onceMinX: CGFloat
+        if type == .picker {
+            onceMinX = originalView.frame.maxX + 2
+        }else {
+            #if HXPICKER_ENABLE_EDITOR
+            onceMinX = originalView.frame.maxX + 2
+            #else
+            onceMinX = 10
+            #endif
+        }
+        if lookonceView.frame.maxX > finishBtn.x || lookonceView.x < originalView.frame.maxX {
+            lookonceView.x = finishBtn.x - lookonceView.width - 2
+            if lookonceView.x < onceMinX {
+                lookonceView.x = onceMinX
+//                lookonceTitleLb.width = lookonceView.x - onceMinX - 5 - lookonceBox.width
+            }
+        }
+    }
+    private func updateLookOnceSubviewFrame() {
+        lookonceTitleLb.frame = CGRect(
+            x: lookonceBox.frame.maxX + 5,
+            y: 0,
+            width: lookonceTitleLb.text!.width(
+                ofFont: lookonceTitleLb.font,
+                maxHeight: 50
+            ),
+            height: 50
+        )
+        if !PhotoManager.isRTL {
+            let leftMargin: CGFloat
+            if type == .picker {
+                leftMargin = originalView.frame.maxX
+            }else {
+                #if HXPICKER_ENABLE_EDITOR
+                leftMargin = originalView.frame.maxX
+                #else
+                leftMargin = 10
+                #endif
+            }
+            if lookonceTitleLb.width > width - leftMargin - originalView.x - 12 {
+                lookonceTitleLb.width = width - leftMargin - originalView.x - 12
+            }
+        }
+        lookonceBox.centerY = lookonceTitleLb.height * 0.5
+    }
+    
     func updateOriginalViewFrame() {
         updateOriginalSubviewFrame()
         if isOriginalLoading {
@@ -810,7 +943,12 @@ extension PhotoToolBarView {
         }else {
             originalView.frame = CGRect(x: 0, y: 0, width: originalTitleLb.frame.maxX, height: 50)
         }
-        originalView.centerX = width / 2
+        let config = type == .picker ? pickerConfig.photoList.bottomView : pickerConfig.previewView.bottomView
+        if config.isHiddenLookOnceButton {
+            originalView.centerX = width * 0.5
+            return
+        }
+        originalView.centerX = width * 1.0 / 3.0
         if PhotoManager.isRTL {
             return
         }
@@ -825,7 +963,7 @@ extension PhotoToolBarView {
             #endif
         }
         if originalView.frame.maxX > finishBtn.x || originalView.x < originalMinX {
-            originalView.x = finishBtn.x - originalView.width
+            originalView.x = originalView.centerX - originalView.width * 0.5 //finishBtn.x - originalView.width
             if originalView.x < originalMinX {
                 originalView.x = originalMinX
                 originalTitleLb.width = finishBtn.x - originalMinX - 5 - originalBox.width

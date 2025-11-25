@@ -19,6 +19,10 @@ public struct PickerResult {
     /// 是否选择的原图
     public var isOriginal: Bool
     
+    /// Whether to select look once
+    /// 是否选择了仅看一次
+    public var isLookOnce: Bool
+    
     /// isOriginal = false
     /// The original image does not select the compression parameter when getting the URL
     /// 原图未选中获取 URL 时的压缩参数，默认为空
@@ -33,10 +37,12 @@ public struct PickerResult {
     ///   - isOriginal: Whether the original image / 是否原图
     public init(
         photoAssets: [PhotoAsset],
-        isOriginal: Bool
+        isOriginal: Bool,
+        isLookOnce: Bool
     ) {
         self.photoAssets = photoAssets
         self.isOriginal = isOriginal
+        self.isLookOnce = isLookOnce
     }
 }
 

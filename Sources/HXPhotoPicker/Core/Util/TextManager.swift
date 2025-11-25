@@ -213,6 +213,8 @@ public extension HX.TextManager {
             public var editTitleFont: UIFont = .systemFont(ofSize: 17)
             public var originalTitle: TextType = .localized("原图")
             public var originalTitleFont: UIFont = .systemFont(ofSize: 17)
+            public var onceTitle: TextType = .localized("仅看一次")
+            public var onceTitleFont: UIFont = .systemFont(ofSize: 17)
         }
     }
     #endif

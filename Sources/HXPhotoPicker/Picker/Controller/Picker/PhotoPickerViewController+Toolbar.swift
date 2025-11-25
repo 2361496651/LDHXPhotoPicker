@@ -27,6 +27,7 @@ extension PhotoPickerViewController: PhotoToolBarDelegate {
         photoToolbar = toolbar.init(pickerConfig, type: .picker)
         photoToolbar.toolbarDelegate = self
         photoToolbar.updateOriginalState(pickerController.isOriginal)
+        photoToolbar.updateLookOnceState(pickerController.isLookOnce)
         if let bottomContainerView {
             bottomContainerView.addSubview(photoToolbar)
         }else {
@@ -76,6 +77,11 @@ extension PhotoPickerViewController: PhotoToolBarDelegate {
         }else {
             pickerController.pickerData.cancelRequestAssetFileSize(isPreview: false)
         }
+    }
+    
+    public func photoToolbar(_ toolbar: any PhotoToolBar, didLookOnceClick isSelected: Bool) {
+        pickerController.isLookOnce = isSelected
+        pickerController.lookOnceButtonCallback()
     }
     
     public func photoToolbar(didFinishClick toolbar: PhotoToolBar) {
@@ -133,5 +139,14 @@ extension PhotoPickerViewController: PhotoToolBarDelegate {
         }
         pickerController.isOriginal = isOriginal
         pickerController.originalButtonCallback()
+    }
+    
+    public func setLookOnce(_ isLookOnce: Bool) {
+        guard let photoToolbar = photoToolbar else {
+            return
+        }
+        photoToolbar.updateLookOnceState(isLookOnce)
+        pickerController.isLookOnce = isLookOnce
+        pickerController.lookOnceButtonCallback()
     }
 }

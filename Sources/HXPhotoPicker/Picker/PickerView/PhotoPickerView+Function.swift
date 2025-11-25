@@ -424,7 +424,7 @@ extension PhotoPickerView {
     }
     
     func finishSelectionAsset(_ photoAssets: [PhotoAsset]) {
-        let result = PickerResult(photoAssets: photoAssets, isOriginal: isOriginal)
+        let result = PickerResult(photoAssets: photoAssets, isOriginal: isOriginal, isLookOnce: isLookOnce)
         delegate?.photoPickerView(self, didFinishSelection: result)
         delegate?.photoPickerView(self, dismissCompletion: result)
     }

@@ -22,6 +22,8 @@ public enum PhotoToolBarType {
 public protocol PhotoToolBarDelegate: AnyObject {
     func photoToolbar(didPreviewClick toolbar: PhotoToolBar)
     func photoToolbar(_ toolbar: PhotoToolBar, didOriginalClick isSelected: Bool)
+    // 点击只看一次
+    func photoToolbar(_ toolbar: PhotoToolBar, didLookOnceClick isSelected: Bool)
     
     #if HXPICKER_ENABLE_EDITOR
     func photoToolbar(didEditClick toolbar: PhotoToolBar)
@@ -71,6 +73,8 @@ public protocol PhotoToolBar: UIView, PhotoPickerDataStatus {
     
     /// 更新原图选中状态
     func updateOriginalState(_ isSelected: Bool)
+    /// 更新仅看一次选中状态
+    func updateLookOnceState(_ isSelected: Bool)
     
     /// 内部主动请求原图大小
     /// ```swift
@@ -140,6 +144,8 @@ public extension PhotoToolBar {
     #endif
     
     func updateOriginalState(_ isSelected: Bool) { }
+    
+    func updateLookOnceState(_ isSelected: Bool) { }
     
     func requestOriginalAssetBtyes() { }
     

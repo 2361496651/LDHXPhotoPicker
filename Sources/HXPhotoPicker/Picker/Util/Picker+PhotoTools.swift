@@ -325,6 +325,11 @@ extension PhotoTools {
         config.photoList.bottomView.originalSelectBox.tickColor = .white
         config.photoList.bottomView.originalSelectBox.selectedBackgroundColor = wxColor
         config.photoList.bottomView.originalLoadingStyle = .white
+        config.photoList.bottomView.lookOnceButtonTitleColor = .white
+        config.photoList.bottomView.lookOnceSelectBox.backgroundColor = .clear
+        config.photoList.bottomView.lookOnceSelectBox.borderColor = .white
+        config.photoList.bottomView.lookOnceSelectBox.tickColor = .white
+        config.photoList.bottomView.lookOnceSelectBox.selectedBackgroundColor = wxColor
         
         config.photoList.bottomView.finishButtonTitleColor = .white
         config.photoList.bottomView.finishButtonBackgroundColor = wxColor
@@ -355,6 +360,11 @@ extension PhotoTools {
         config.previewView.bottomView.originalSelectBox.borderColor = .white
         config.previewView.bottomView.originalSelectBox.tickColor = .white
         config.previewView.bottomView.originalSelectBox.selectedBackgroundColor = wxColor
+        config.previewView.bottomView.lookOnceButtonTitleColor = .white
+        config.previewView.bottomView.lookOnceSelectBox.backgroundColor = .clear
+        config.previewView.bottomView.lookOnceSelectBox.borderColor = .white
+        config.previewView.bottomView.lookOnceSelectBox.tickColor = .white
+        config.previewView.bottomView.lookOnceSelectBox.selectedBackgroundColor = wxColor
         #if targetEnvironment(macCatalyst)
         config.previewView.bottomView.originalLoadingStyle = UIActivityIndicatorView.Style.medium
         #else

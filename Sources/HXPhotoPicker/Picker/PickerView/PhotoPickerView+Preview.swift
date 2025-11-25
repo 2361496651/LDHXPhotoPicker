@@ -35,7 +35,8 @@ extension PhotoPickerView: PhotoPreviewViewControllerDelegate {
         previewController.pickerController.disablesCustomDismiss = true
         let result = PickerResult(
             photoAssets: photoAssets,
-            isOriginal: isOriginal
+            isOriginal: isOriginal,
+            isLookOnce: isLookOnce
         )
         delegate?.photoPickerView(self, didFinishSelection: result)
         previewController.dismiss(animated: true) {
@@ -49,6 +50,14 @@ extension PhotoPickerView: PhotoPreviewViewControllerDelegate {
     ) {
         self.isOriginal = isOriginal
         delegate?.photoPickerView(self, previewDidOriginalButton: isOriginal)
+    }
+    
+    func previewViewController(
+        _ previewController: PhotoPreviewViewController,
+        didLookOnceButton isLookOnce: Bool
+    ) {
+        self.isLookOnce = isLookOnce
+        delegate?.photoPickerView(self, previewDidLookOnceButton: isLookOnce)
     }
     
     #if HXPICKER_ENABLE_EDITOR

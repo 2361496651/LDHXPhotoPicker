@@ -56,6 +56,15 @@ public protocol PhotoPickerControllerDelegate: AnyObject {
         didOriginalButton isOriginal: Bool
     )
     
+    /// 点击了仅看一次
+    /// - Parameters:
+    ///   - pickerController: 对应的 PhotoPickerController
+    ///   - isLookOnce: 是否选中的仅看一次
+    func pickerController(
+        _ pickerController: PhotoPickerController,
+        didLookOnceButton isLookOnce: Bool
+    )
+    
     /// 将要点击cell，允许的话点击之后会根据配置的动作进行操作
     /// - Parameters:
     ///   - pickerController: 对应的 PhotoPickerController
@@ -541,6 +550,10 @@ public extension PhotoPickerControllerDelegate {
     func pickerController(
         _ pickerController: PhotoPickerController,
         didOriginalButton isOriginal: Bool
+    ) { }
+    func pickerController(
+        _ pickerController: PhotoPickerController,
+        didLookOnceButton isLookOnce: Bool
     ) { }
     
     func pickerController(
