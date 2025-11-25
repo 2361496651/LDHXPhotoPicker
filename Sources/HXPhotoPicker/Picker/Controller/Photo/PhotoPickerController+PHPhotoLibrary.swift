@@ -12,6 +12,7 @@ import Photos
 extension PhotoPickerController: PHPhotoLibraryChangeObserver {
     
     public func photoLibraryDidChange(_ changeInstance: PHChange) {
+        /*
         if !config.allowLoadPhotoLibrary {
             return
         }
@@ -53,6 +54,42 @@ extension PhotoPickerController: PHPhotoLibraryChangeObserver {
                         self.reloadData(assetCollection: nil)
                     }
                 }
+            }
+        }
+         */
+        if !config.allowLoadPhotoLibrary {
+            return
+        }
+        var needReload = false
+        if fetchData.assetCollections.isEmpty {
+            if let collection = fetchData.cameraAssetCollection {
+                needReload = resultHasChanges(
+                    for: changeInstance,
+                    assetCollection: collection
+                )
+            }else {
+                needReload = true
+            }
+        }else {
+            let collectionArray = fetchData.assetCollections
+            for assetCollection in collectionArray {
+                let hasChanges = resultHasChanges(
+                    for: changeInstance,
+                    assetCollection: assetCollection
+                )
+                if !needReload {
+                    needReload = hasChanges
+                }
+            }
+        }
+        if needReload {
+            DispatchQueue.main.async {
+                if self.fetchData.cameraAssetCollection?.collection == nil {
+                    self.fetchData.fetchCameraAssetCollection()
+                }else {
+                    self.reloadData(assetCollection: nil)
+                }
+                self.fetchData.fetchAssetCollections()
             }
         }
     }
