@@ -57,6 +57,10 @@ extension PhotoPickerController: PHPhotoLibraryChangeObserver {
             }
         }
          */
+        
+        let isOpen = UserDefaults.standard.bool(forKey: "isOpenABTest")
+        if !isOpen { return }
+        
         if !config.allowLoadPhotoLibrary {
             return
         }
