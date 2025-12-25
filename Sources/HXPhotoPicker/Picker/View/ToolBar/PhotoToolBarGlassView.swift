@@ -377,11 +377,17 @@ public class PhotoToolBarGlassView: UIView, PhotoToolBar {
     public func updateLookOnceState(_ isSelected: Bool) {
         guard let lookOnceBtn else { return }
         lookOnceBtn.isSelected = isSelected
+        if isSelected,let originalBtn {
+            originalBtn.isSelected = false
+        }
     }
     
     public func updateOriginalState(_ isSelected: Bool) {
         guard let originalBtn else { return}
         originalBtn.isSelected = isSelected
+        if isSelected, let lookOnceBtn {
+            lookOnceBtn.isSelected = false
+        }
     }
     
     public func requestOriginalAssetBtyes() {

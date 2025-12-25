@@ -332,10 +332,16 @@ public class PhotoToolBarView: UIView, PhotoToolBar {
     
     public func updateLookOnceState(_ isSelected: Bool) {
         lookonceBox.isSelected = isSelected
+        if isSelected {
+            originalBox.isSelected = false
+        }
     }
     
     public func updateOriginalState(_ isSelected: Bool) {
         originalBox.isSelected = isSelected
+        if isSelected {
+            lookonceBox.isSelected = false
+        }
     }
     
     public func requestOriginalAssetBtyes() {
