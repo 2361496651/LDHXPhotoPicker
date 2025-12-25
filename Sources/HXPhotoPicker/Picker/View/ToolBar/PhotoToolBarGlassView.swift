@@ -377,17 +377,11 @@ public class PhotoToolBarGlassView: UIView, PhotoToolBar {
     public func updateLookOnceState(_ isSelected: Bool) {
         guard let lookOnceBtn else { return }
         lookOnceBtn.isSelected = isSelected
-        if isSelected,let originalBtn {
-            originalBtn.isSelected = false
-        }
     }
     
     public func updateOriginalState(_ isSelected: Bool) {
         guard let originalBtn else { return}
         originalBtn.isSelected = isSelected
-        if isSelected, let lookOnceBtn {
-            lookOnceBtn.isSelected = false
-        }
     }
     
     public func requestOriginalAssetBtyes() {
@@ -489,6 +483,10 @@ public class PhotoToolBarGlassView: UIView, PhotoToolBar {
         guard let lookOnceBtn else { return}
         lookOnceBtn.isSelected = !lookOnceBtn.isSelected
         let isSelected = lookOnceBtn.isSelected
+        // 仅看一次选中时，如果原图也是选中状态则取消选中
+        if isSelected && originalBtn.isSelected {
+            didOriginalButtonClick()
+        }
         toolbarDelegate?.photoToolbar(self, didLookOnceClick: isSelected)
     }
     
@@ -497,6 +495,10 @@ public class PhotoToolBarGlassView: UIView, PhotoToolBar {
         guard let originalBtn else { return}
         originalBtn.isSelected = !originalBtn.isSelected
         let isSelected = originalBtn.isSelected
+        // 原图选中时，如果仅看一次也是选中状态则取消选中
+        if isSelected && lookOnceBtn.isSelected {
+            didLookonceButtonClick()
+        }
         if isSelected {
             if isCanLoadOriginal {
                 startOriginalLoading()

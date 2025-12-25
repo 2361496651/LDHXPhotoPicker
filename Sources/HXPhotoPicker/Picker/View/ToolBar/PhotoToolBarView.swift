@@ -332,16 +332,10 @@ public class PhotoToolBarView: UIView, PhotoToolBar {
     
     public func updateLookOnceState(_ isSelected: Bool) {
         lookonceBox.isSelected = isSelected
-        if isSelected {
-            originalBox.isSelected = false
-        }
     }
     
     public func updateOriginalState(_ isSelected: Bool) {
         originalBox.isSelected = isSelected
-        if isSelected {
-            lookonceBox.isSelected = false
-        }
     }
     
     public func requestOriginalAssetBtyes() {
@@ -439,6 +433,10 @@ public class PhotoToolBarView: UIView, PhotoToolBar {
     @objc
     private func didLookonceButtonClick() {
         lookonceBox.isSelected = !lookonceBox.isSelected
+        // 仅看一次选中时，如果原图也是选中状态则取消选中
+        if lookonceBox.isSelected && originalBox.isSelected {
+            didOriginalButtonClick()
+        }
         lookonceBox.layer.removeAnimation(forKey: "SelectControlAnimation")
         let keyAnimation = CAKeyframeAnimation.init(keyPath: "transform.scale")
         keyAnimation.duration = 0.3
@@ -459,6 +457,10 @@ public class PhotoToolBarView: UIView, PhotoToolBar {
     @objc
     private func didOriginalButtonClick() {
         originalBox.isSelected = !originalBox.isSelected
+        // 原图选中时，如果仅看一次也是选中状态则取消选中
+        if originalBox.isSelected && lookonceBox.isSelected {
+            didLookonceButtonClick()
+        }
         originalBox.layer.removeAnimation(forKey: "SelectControlAnimation")
         let keyAnimation = CAKeyframeAnimation.init(keyPath: "transform.scale")
         keyAnimation.duration = 0.3
